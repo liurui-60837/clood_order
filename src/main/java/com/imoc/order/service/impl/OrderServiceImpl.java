@@ -1,9 +1,12 @@
 package com.imoc.order.service.impl;
 
 import com.imoc.order.Utls.KeyUtil;
+import com.imoc.order.client.ProductClient;
+import com.imoc.order.controller.ClientController;
 import com.imoc.order.dataobject.OrderDetail;
 import com.imoc.order.dataobject.OrderMaster;
 import com.imoc.order.dataobject.ProductInfo;
+import com.imoc.order.dto.CartDto;
 import com.imoc.order.dto.OrderDto;
 import com.imoc.order.enums.OrderStatusEnum;
 import com.imoc.order.enums.PaystatusEnum;
@@ -22,6 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,7 +37,8 @@ public class OrderServiceImpl implements OrderService {
     private OrderDetailRepository orderDetailRepository;
     @Autowired
     private OrderMasterRepository orderMasterRepository;
-
+    @Autowired
+    private ProductClient productClient;
 
     @Override
     @Transactional
@@ -41,10 +48,11 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal orderAmout = new BigDecimal("0");
         //1,查询商品的、数量、价格、
         for (OrderDetail orderDetail:orderDto.getOrderDetailList()) {
-            ProductInfo productInfo = new ProductInfo();
-            if(productInfo==null){
+            List<ProductInfo> productInfos = productClient.listForOrder(Arrays.asList(orderDetail.getProductId()));
+            if(productInfos==null||productInfos.size()==0){
                 throw  new SellException(ResultEnum.PRODUCT_NOT_EXIST);
             }
+            ProductInfo productInfo = productInfos.get(0);
         //2.j计算总价
             orderAmout = productInfo.getProductPrice()
                     .multiply(new BigDecimal(orderDetail.getProductQuantity()))
@@ -56,7 +64,6 @@ public class OrderServiceImpl implements OrderService {
             orderDetailRepository.save(orderDetail);
         }
 
-
         //3.写入数据库（orderMater和orderDetail）
         OrderMaster orderMaster = new OrderMaster();
         BeanUtils.copyProperties(orderDto ,orderMaster);
@@ -66,8 +73,12 @@ public class OrderServiceImpl implements OrderService {
         orderMaster.setPayStatus(PaystatusEnum.WAIT.getCode());
         orderMasterRepository.save(orderMaster);
         //4.扣库存
-
-
+        List<CartDto> cartDtoList =
+                orderDto.getOrderDetailList().stream().map(e->
+                        new CartDto(e.getProductId(),e.getProductQuantity()))
+                        .collect(Collectors.toList());
+        //调用商品接口，扣库存
+        productClient.deleteProductForOrder(cartDtoList);
         return orderDto;
     }
 

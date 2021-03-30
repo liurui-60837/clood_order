@@ -1,6 +1,7 @@
 package com.imoc.order.client;
 
 import com.imoc.order.dataobject.ProductInfo;
+import com.imoc.order.dto.CartDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,9 @@ public interface ProductClient {
 
     @PostMapping("product/listForOrder")
     List<ProductInfo> listForOrder(@RequestBody List<String> productIds);
+
+    @PostMapping("product/deleteProductForOrder")
+    void deleteProductForOrder(@RequestBody List<CartDto> cartDtoList);
 
 
 
