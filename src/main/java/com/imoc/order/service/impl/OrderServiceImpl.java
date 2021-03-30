@@ -45,24 +45,28 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto create(OrderDto orderDto) {
         String orderId = KeyUtil.getUniqueKey();
         orderDto.setOrderId(orderId);
-        BigDecimal orderAmout = new BigDecimal("0");
         //1,查询商品的、数量、价格、
-        for (OrderDetail orderDetail:orderDto.getOrderDetailList()) {
-            List<ProductInfo> productInfos = productClient.listForOrder(Arrays.asList(orderDetail.getProductId()));
-            if(productInfos==null||productInfos.size()==0){
-                throw  new SellException(ResultEnum.PRODUCT_NOT_EXIST);
-            }
-            ProductInfo productInfo = productInfos.get(0);
-        //2.j计算总价
-            orderAmout = productInfo.getProductPrice()
-                    .multiply(new BigDecimal(orderDetail.getProductQuantity()))
-                    .add(orderAmout);
-            //订单详情入库
-            orderDetail.setDetailId(KeyUtil.getUniqueKey());
-            orderDetail.setOrderId(orderId);
-            BeanUtils.copyProperties(productInfo,orderDetail);
-            orderDetailRepository.save(orderDetail);
+        List<String> productIds = orderDto.getOrderDetailList().stream().map(e->e.getProductId()).collect(Collectors.toList());
+        List<ProductInfo> productInfos = productClient.listForOrder(productIds);
+        if(productInfos==null||productInfos.size()==0){
+            throw  new SellException(ResultEnum.PRODUCT_NOT_EXIST);
         }
+        //2.j计算总价
+            BigDecimal orderAmout = new BigDecimal("0");
+            for(OrderDetail orderDetai:orderDto.getOrderDetailList()){
+                for(ProductInfo productInfo:productInfos){
+                    if(productInfo.getProductId().equals(orderDetai.getProductId())){
+                        orderAmout = productInfo.getProductPrice()
+                                .multiply(new BigDecimal(orderDetai.getProductQuantity()))
+                                .add(orderAmout);
+                        BeanUtils.copyProperties(productInfo,orderDetai);
+                        orderDetai.setOrderId(orderId);
+                        orderDetai.setDetailId(KeyUtil.getUniqueKey());
+                        //订单详情入库
+                        orderDetailRepository.save(orderDetai);
+                    }
+                }
+            }
 
         //3.写入数据库（orderMater和orderDetail）
         OrderMaster orderMaster = new OrderMaster();
