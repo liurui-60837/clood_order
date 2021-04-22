@@ -1,12 +1,8 @@
 package com.imoc.order.service.impl;
 
 import com.imoc.order.Utls.KeyUtil;
-import com.imoc.order.client.ProductClient;
-import com.imoc.order.controller.ClientController;
 import com.imoc.order.dataobject.OrderDetail;
 import com.imoc.order.dataobject.OrderMaster;
-import com.imoc.order.dataobject.ProductInfo;
-import com.imoc.order.dto.CartDto;
 import com.imoc.order.dto.OrderDto;
 import com.imoc.order.enums.OrderStatusEnum;
 import com.imoc.order.enums.PaystatusEnum;
@@ -16,6 +12,10 @@ import com.imoc.order.exception.SellException;
 import com.imoc.order.respository.OrderDetailRepository;
 import com.imoc.order.respository.OrderMasterRepository;
 import com.imoc.order.service.OrderService;
+
+import com.imooc.product.client.ProductClient;
+import com.imooc.product.common.CartDto;
+import com.imooc.product.common.ProductInfoDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,14 +46,15 @@ public class OrderServiceImpl implements OrderService {
         orderDto.setOrderId(orderId);
         //1,查询商品的、数量、价格、
         List<String> productIds = orderDto.getOrderDetailList().stream().map(e->e.getProductId()).collect(Collectors.toList());
-        List<ProductInfo> productInfos = productClient.listForOrder(productIds);
+        //调用商品接口查询商品
+        List<ProductInfoDTO> productInfos = productClient.listForOrder(productIds);
         if(productInfos==null||productInfos.size()==0){
             throw  new SellException(ResultEnum.PRODUCT_NOT_EXIST);
         }
         //2.j计算总价
             BigDecimal orderAmout = new BigDecimal("0");
             for(OrderDetail orderDetai:orderDto.getOrderDetailList()){
-                for(ProductInfo productInfo:productInfos){
+                for(ProductInfoDTO productInfo:productInfos){
                     if(productInfo.getProductId().equals(orderDetai.getProductId())){
                         orderAmout = productInfo.getProductPrice()
                                 .multiply(new BigDecimal(orderDetai.getProductQuantity()))
