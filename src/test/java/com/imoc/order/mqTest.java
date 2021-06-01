@@ -16,6 +16,6 @@ public class mqTest {
     private AmqpTemplate amqpTemplate;
     @Test
     public void send(){
-        amqpTemplate.convertAndSend("myreceive","你好123");
+        amqpTemplate.convertAndSend("myQueue","你好123");
     }
 }
