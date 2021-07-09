@@ -10,6 +10,6 @@ public interface StreamClient {
     @Input("myMessage")
     SubscribableChannel input();
 
-    @Output("myMessage")
+   // @Output("myMessage")
     MessageChannel output();
 }

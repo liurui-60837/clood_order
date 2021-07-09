@@ -19,4 +19,5 @@ public interface OrderService {
 //    OrderDto paid(OrderDto orderDto);
 //
 //    Page<OrderDto> findListAll(Pageable pageable);
+    void simpleRead();
 }

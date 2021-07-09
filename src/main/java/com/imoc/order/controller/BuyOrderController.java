@@ -54,4 +54,9 @@ public class BuyOrderController {
         List<OrderDetail> orderDetailList = orderDetailRepository.findAll();
         return orderDetailList;
     }
+    @GetMapping("/test")
+    public ResultVO cancel( ){
+        orderService.simpleRead();
+        return ResultVOUtil.success();
+    }
 }
