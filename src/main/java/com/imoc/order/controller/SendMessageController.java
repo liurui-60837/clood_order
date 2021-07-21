@@ -1,8 +1,11 @@
 package com.imoc.order.controller;
 
+import com.imoc.order.dto.OrderDto;
 import com.imoc.order.message.StreamClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.support.MessageBuilder;
+
+
+import org.springframework.integration.support.MessageBuilder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +19,10 @@ public class SendMessageController {
 
     @GetMapping("/sendMessage")
     public void process(){
-        streamClient.output().send(MessageBuilder.withPayload("now :"+new Date()).build());
+        //String mess = ("now :"+new Date());
+        String mess = "123";
+        OrderDto o  = new OrderDto();
+        o.setBuyerName("你好");
+        streamClient.output().send(MessageBuilder.withPayload(o).build());
     }
 }
