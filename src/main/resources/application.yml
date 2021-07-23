@@ -13,7 +13,9 @@ spring:
     port: 5672
     username: admin
     password: admin
-
+  redis:
+    host: 152.136.255.142
+    port: 6379
 
 eureka:
   client:
