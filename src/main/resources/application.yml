@@ -3,19 +3,20 @@ spring:
     name: order
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    username: eating
-    password: liurui_ruiqeradf123_123ll
+    username: root
+    password: sadfcniadf_asdfasdfwf_fasdf123
     url: jdbc:mysql://152.136.255.142:3306/eat?characterEncoding=utf-8&useSSL=false
   jpa:
     show-sql: true
   rabbitmq:
     host: 152.136.255.142
     port: 5672
-    username: admin
-    password: admin
+    username: guest
+    password: guest
   redis:
     host: 152.136.255.142
     port: 6379
+    password: sadfcniadf_asdfasdfwf_fasdf123  # Redis服务器连接密码（默认为空）
 
 eureka:
   client:
