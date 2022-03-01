@@ -8,7 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@MapperScan("com.imoc.order.redisUser") // mybatis 的扫描包
+@MapperScan("com.imoc.order.redisUser.dao") // mybatis 的扫描包
 @EnableFeignClients(basePackages = "com.imooc.product.client")
 public class OrderApplication {
 

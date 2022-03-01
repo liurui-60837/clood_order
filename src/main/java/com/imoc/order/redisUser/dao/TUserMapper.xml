@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imoc.order.redisUser.dao.TUserMapper">
+
+    <resultMap type="com.imoc.order.redisUser.entity.User" id="TUserMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="password" column="password" jdbcType="VARCHAR"/>
+        <result property="sex" column="sex" jdbcType="VARCHAR"/>
+        <result property="deleted" column="deleted" jdbcType="VARCHAR"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id
+        , username, password, sex, deleted, update_time, create_time    </sql>
+
+    <!--查询单个-->
+    <select id="selectByPrimaryKey" resultMap="TUserMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+        where id = #{id,jdbcType=INTEGER}
+    </select>
+
+    <!--通过主键批量查询-->
+    <select id="selectByids" resultMap="TUserMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+        where id in
+        <foreach collection="ids" index="index" item="item"
+                 open="(" separator="," close=")">
+            #{item,jdbcType=INTEGER}
+        </foreach>
+    </select>
+
+
+    <!--通过各个字段查询-->
+    <select id="selectByFilter" resultMap="TUserMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_user
+        where 1=1
+        <if test="id != null">
+            and id = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="username != null and username != ''">
+            and username = #{username,jdbcType=VARCHAR}
+        </if>
+        <if test="password != null and password != ''">
+            and password = #{password,jdbcType=VARCHAR}
+        </if>
+        <if test="sex != null and sex != ''">
+            and sex = #{sex,jdbcType=VARCHAR}
+        </if>
+        <if test="deleted != null and deleted != ''">
+            and deleted = #{deleted,jdbcType=VARCHAR}
+        </if>
+        <if test="updateTime != null">
+            and update_time = #{updateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="createTime != null">
+            and create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+
+    </select>
+
+
+    <!--插入-->
+    <insert id="insertSelective" parameterType="com.imoc.order.redisUser.entity.User">
+        insert into t_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id ,
+            </if>
+            <if test="username != null and username != ''">
+                username ,
+            </if>
+            <if test="password != null and password != ''">
+                password ,
+            </if>
+            <if test="sex != null and sex != ''">
+                sex ,
+            </if>
+            <if test="deleted != null and deleted != ''">
+                deleted ,
+            </if>
+            <if test="updateTime != null">
+                update_time ,
+            </if>
+            <if test="createTime != null">
+                create_time ,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=INTEGER},
+            </if>
+            <if test="username != null and username != ''">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password != ''">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null and sex != ''">
+                #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null and deleted != ''">
+                #{deleted,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into t_user(id, username, password, sex, deleted, update_time, create_time)
+        select a.* from (
+        <foreach collection="entities" item="entity" separator="union all">
+            (select
+            #{entity.id,jdbcType=INTEGER}, #{entity.username,jdbcType=VARCHAR}, #{entity.password,jdbcType=VARCHAR},
+            #{entity.sex,jdbcType=VARCHAR}, #{entity.deleted,jdbcType=VARCHAR}, #{entity.updateTime,jdbcType=TIMESTAMP},
+            #{entity.createTime,jdbcType=TIMESTAMP} from dual)
+        </foreach>
+        )a
+    </insert>
+
+    <!--ͨ修改-->
+    <update id="updateByPrimaryKeySelective">
+        update t_user
+        <set>
+            <if test="username != null and username != ''">
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex,jdbcType=VARCHAR},
+            </if>
+            <if test="deleted != null and deleted != ''">
+                deleted = #{deleted,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+
+    <!--删除-->
+    <delete id="deleteById">
+        delete
+        from t_user
+        where id = #{id,jdbcType=INTEGER}
+    </delete>
+
+
+</mapper>
+

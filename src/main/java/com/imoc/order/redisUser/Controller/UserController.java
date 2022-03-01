@@ -25,7 +25,7 @@ public class UserController {
             User user = new User();
             user.setUsername("zzyy" + i);
             user.setPassword("123123123");
-            user.setSex(1);
+            user.setSex("1");
             userService.addUser(user);
         }
     }

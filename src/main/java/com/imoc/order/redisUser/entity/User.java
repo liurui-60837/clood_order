@@ -6,11 +6,11 @@ import java.io.Serializable;
 /**
  * 用户表(TUser)实体类
  *
- * @author makejava
- * @since 2022-02-28 22:51:21
+ * @author liurui
+ * @since 2022-03-01 17:04:23
  */
 public class User implements Serializable {
-    private static final long serialVersionUID = -34748938606085374L;
+    private static final long serialVersionUID = -52061141041267241L;
 
     private Integer id;
     /**
@@ -24,7 +24,7 @@ public class User implements Serializable {
     /**
      * 性别 0=女 1=男
      */
-    private Integer sex;
+    private String sex;
     /**
      * 删除标志，默认0不删除，1删除
      */
@@ -63,11 +63,11 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public Integer getSex() {
+    public String getSex() {
         return sex;
     }
 
-    public void setSex(Integer sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 
